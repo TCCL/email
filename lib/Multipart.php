@@ -57,7 +57,7 @@ abstract class Multipart implements EmailGenerator {
         if (!empty($body)) {
             $body .= "\r\n";
         }
-        $body .= "--$this->boundary\r\n";
+        $body .= "--$this->boundary--\r\n";
         return $body;
     }
 
