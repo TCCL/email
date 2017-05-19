@@ -1,0 +1,19 @@
+{
+    "name": "tccl/email",
+    "description": "An email generation library",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roger Gee",
+            "email": "roger.gee@tulsalibrary.org"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "TCCL\\Email\\": "lib"
+        }
+    }
+}
