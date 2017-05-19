@@ -97,6 +97,15 @@ class Attachment implements EmailGenerator {
     }
 
     /**
+     * Gets the attachement file name.
+     *
+     * @return string
+     */
+    public function getFileName() {
+        return $this->fileName;
+    }
+
+    /**
      * Convert the specified extension to its corresponding MIME-type.
      *
      * @param string $ex
