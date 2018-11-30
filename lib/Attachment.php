@@ -2,6 +2,8 @@
 
 /**
  * Attachment.php
+ *
+ * This file is a part of tccl/email.
  */
 
 namespace TCCL\Email;
@@ -89,11 +91,11 @@ class Attachment implements EmailGenerator {
      * Implements EmailGenerator::getHeaders().
      */
     public function getHeaders() {
-        return array(
+        return [
             'Content-Type' => "$this->contentType; name=$this->fileName",
             'Content-Transfer-Encoding' => 'base64',
             'Content-Disposition' => "attachment; filename=$this->fileName",
-        );
+        ];
     }
 
     /**
@@ -119,7 +121,7 @@ class Attachment implements EmailGenerator {
                 return false;
             }
 
-            $map = array();
+            $map = [];
             $info = file_get_contents(self::TYPES_FILE);
             foreach (explode("\n",$info) as $line) {
                 $line = trim($line);

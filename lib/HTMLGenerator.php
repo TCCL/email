@@ -12,9 +12,9 @@ class HTMLGenerator implements EmailGenerator {
     private $modifs;
     private $content;
 
-    static private $headers = array(
+    static private $headers = [
         'Content-Type' => 'text/html; charset=utf-8',
-    );
+    ];
 
     /**
      * Implements EmailGenerator::getContent().

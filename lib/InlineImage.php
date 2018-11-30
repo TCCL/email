@@ -10,7 +10,7 @@ namespace TCCL\Email;
 
 class InlineImage extends Attachment {
     private $contentId;
-    static private $images = array();
+    static private $images = [];
 
     /**
      * Wraps the base class constructor, Attachement::__construct().

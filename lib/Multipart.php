@@ -67,9 +67,9 @@ abstract class Multipart implements EmailGenerator {
     public function getHeaders() {
         $subtype = $this->getSubtype();
 
-        return array(
+        return [
             'Content-Type' => "multipart/$subtype; boundary=\"$this->boundary\"",
-        );
+        ];
     }
 
     /**

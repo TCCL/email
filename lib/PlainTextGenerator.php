@@ -22,9 +22,9 @@ class PlainTextGenerator implements EmailGenerator {
      * Implements EmailGenerator::getHeaders().
      */
     public function getHeaders() {
-        return array(
+        return [
             'Content-Type' => 'text/plain; charset=utf-8',
-        );
+        ];
     }
 
     /**
