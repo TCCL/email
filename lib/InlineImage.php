@@ -9,8 +9,48 @@
 namespace TCCL\Email;
 
 class InlineImage extends Attachment {
+    /**
+     * Map of image file names to content IDs.
+     *
+     * @var array
+     */
+    static private $imageMap = [];
+
+    /**
+     * Update all references to the inline images in the specified
+     * HTMLGenerator. All inline images will be candidates.
+     *
+     * @param \TCCL\Email\HTMLGenerator $generator
+     *  The generator to modify.
+     */
+    static function linkTo(HTMLGenerator $generator) {
+        $modif['callback'] = function(&$tag,&$attr) {
+            if (preg_match('/src="([^ "]+)"/',$attr,$matches,PREG_OFFSET_CAPTURE)) {
+                if (isset(self::$imageMap[$matches[1][0]])) {
+                    // Change file name in "src" attribute.
+                    $cid = self::$imageMap[$matches[1][0]];
+                    $attr = substr($attr,0,$matches[1][1]) . "cid:$cid"
+                        . substr($attr,$matches[1][1] + strlen($matches[1][0]));
+                }
+            }
+        };
+
+        $generator->addModifier('img',$modif);
+    }
+
+    /**
+     * Resets the image map.
+     */
+    public static function reset() {
+        self::$imageMap = [];
+    }
+
+    /**
+     * The unique content ID created for the image.
+     *
+     * @var string
+     */
     private $contentId;
-    static private $images = [];
 
     /**
      * Wraps the base class constructor, Attachement::__construct().
@@ -23,7 +63,7 @@ class InlineImage extends Attachment {
         $fileName = $this->getFileName();
         $this->contentId = "@{$guid}_$fileName";
 
-        self::$images[$fileName] = $this->contentId;
+        self::$imageMap[$fileName] = $this->contentId;
     }
 
     /**
@@ -35,28 +75,6 @@ class InlineImage extends Attachment {
         $headers['Content-Disposition'] = 'inline';
 
         return $headers;
-    }
-
-    /**
-     * Update all references to the inline images in the specified
-     * HTMLGenerator. All inline images will be candidates.
-     *
-     * @param HTMLGenerator $generator
-     *  The generator to modify.
-     */
-    static function linkTo(HTMLGenerator $generator) {
-        $modif['callback'] = function(&$tag,&$attr) {
-            if (preg_match('/src="([^ "]+)"/',$attr,$matches,PREG_OFFSET_CAPTURE)) {
-                if (isset(self::$images[$matches[1][0]])) {
-                    // Change file name in "src" attribute.
-                    $cid = self::$images[$matches[1][0]];
-                    $attr = substr($attr,0,$matches[1][1]) . "cid:$cid"
-                        . substr($attr,$matches[1][1] + strlen($matches[1][0]));
-                }
-            }
-        };
-
-        $generator->addModifier('img',$modif);
     }
 
     static private function generateGuid() {
