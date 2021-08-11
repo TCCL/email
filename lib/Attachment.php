@@ -58,12 +58,23 @@ class Attachment implements EmailGenerator {
         // doesn't exist, use PHP's mime_content_type() function.
         $this->contentType = self::ex2mime($pinfo['extension']);
         if ($this->contentType === false) {
-            if (is_resource($url)) {
-                $this->contentType = 'application/octet-stream';
+            // Since mime_content_type() requires a file on disk, we need to
+            // copy the input stream to a temporary file if the stream wrapper
+            // is not 'file'.
+            $meta = stream_get_meta_data($this->inputStream);
+            if ($meta['wrapper_type'] != 'file') {
+                $tmp = tmpfile();
+                if (stream_copy_to_stream($this->inputStream,$tmp) === false) {
+                    throw new Exception('Failed to copy attachment data to temporary file');
+                }
+
+                $this->inputStream = $tmp;
+                $meta = stream_get_meta_data($tmp);
+                fseek($tmp,0);
             }
-            else {
-                $this->contentType = mime_content_type($url);
-            }
+
+            $filePath = $meta['uri'];
+            $this->contentType = mime_content_type($filePath);
         }
     }
 
