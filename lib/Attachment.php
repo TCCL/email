@@ -83,15 +83,17 @@ class Attachment implements EmailGenerator {
      */
     public function getContent() {
         if (!isset($this->content)) {
-            $encoded = base64_encode(stream_get_contents($this->inputStream));
-            $output = '';
+            stream_filter_append($this->inputStream,'convert.base64-encode');
 
-            $i = 0;
-            while ($i < strlen($encoded)) {
-                $output .= substr($encoded,$i,self::BASE64_LINE_LEN) . "\r\n";
-                $i += self::BASE64_LINE_LEN;
+            $this->content = '';
+            while (true) {
+                $block = fread($this->inputStream,self::BASE64_LINE_LEN);
+                if (empty($block)) {
+                    break;
+                }
+                $this->content .= "$block\r\n";
             }
-            $this->content = $output;
+
             fclose($this->inputStream);
         }
 
@@ -123,6 +125,8 @@ class Attachment implements EmailGenerator {
      *
      * @param string $ex
      *  The file extension (without a leading punctuator).
+     *
+     * @return string
      */
     static private function ex2mime($ex) {
         static $map;
