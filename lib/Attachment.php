@@ -8,8 +8,6 @@
 
 namespace TCCL\Email;
 
-use Exception;
-
 class Attachment implements EmailGenerator {
     const BASE64_LINE_LEN = 76;
     const TYPES_FILE = '/etc/mime.types';
@@ -34,13 +32,13 @@ class Attachment implements EmailGenerator {
         if (!is_resource($url)) {
             $this->inputStream = fopen($url,'r');
             if (!is_resource($this->inputStream)) {
-                throw new Exception(__METHOD__.': cannot open attachment URL');
+                throw new EmailException('Failed opening attachment URL');
             }
         }
         else {
             $this->inputStream = $url;
             if (!isset($desiredName)) {
-                throw new Exception(__METHOD__.': attachment file name must be specified');
+                throw new EmailException('Attachment file name must be specified');
             }
         }
 
@@ -65,7 +63,9 @@ class Attachment implements EmailGenerator {
             if ($meta['wrapper_type'] != 'file') {
                 $tmp = tmpfile();
                 if (stream_copy_to_stream($this->inputStream,$tmp) === false) {
-                    throw new Exception('Failed to copy attachment data to temporary file');
+                    throw new EmailException(
+                        'Failed to copy attachment data to temporary file'
+                    );
                 }
 
                 $this->inputStream = $tmp;
